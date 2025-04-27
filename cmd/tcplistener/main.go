@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
-	"httpfromtcp/internal/request"
 	"log"
 	"net"
+
+	"github.com/5tuartw/httpfromtcp/internal/request"
 )
 
 func main() {
@@ -35,6 +36,13 @@ func main() {
 		fmt.Printf("- Method: %s\n", request.RequestLine.Method)
 		fmt.Printf("- Target: %s\n", request.RequestLine.RequestTarget)
 		fmt.Printf("- Version: %s\n", request.RequestLine.HttpVersion)
+		fmt.Println("Headers:")
+		for key, value := range request.Headers {
+			fmt.Printf("- %s: %s\n", key, value)
+		}
+		fmt.Println("Body:")
+		fmt.Println(string(request.Body))
+		fmt.Println("...")
 
 		log.Printf("Connection from %s has been closed.", connection.RemoteAddr())
 	}

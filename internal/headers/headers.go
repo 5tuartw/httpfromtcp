@@ -3,7 +3,6 @@ package headers
 import (
 	"bytes"
 	"fmt"
-	"log"
 	"regexp"
 	"strings"
 )
@@ -14,7 +13,16 @@ var validPattern = regexp.MustCompile("^[a-zA-Z0-9!#$%&'*+.^_|~`-]*$")
 
 type Headers map[string]string
 
-func (h Headers) Parse(data []byte) (int, bool, error) {
+func (h Headers) Get(key string) string {
+	return h[strings.ToLower(key)]
+}
+
+func (h *Headers) Parse(data []byte) (int, bool, error) {
+
+	if *h == nil {
+		*h = make(Headers)
+	}
+
 	if len(data) == 0 {
 		return 0, false, fmt.Errorf("no data to parse")
 	}
@@ -24,7 +32,7 @@ func (h Headers) Parse(data []byte) (int, bool, error) {
 	for {
 		index := bytes.Index(data, []byte(crlf))
 		if index == -1 {
-			log.Printf("No CRLF found in data")
+			//log.Printf("No CRLF found in data")
 			return bytesConsumed, false, nil
 		}
 		// if crlf is start of string, we're at the end of the header string
@@ -51,11 +59,11 @@ func (h Headers) Parse(data []byte) (int, bool, error) {
 		key = strings.ToLower(key)
 		value := strings.TrimSpace(parts[1])
 
-		_, ok := h[key]
+		_, ok := (*h)[key]
 		if !ok {
-			h[key] = value
+			(*h)[key] = value
 		} else {
-			h[key] = h[key] + ", " + value
+			(*h)[key] = (*h)[key] + ", " + value
 		}
 
 		data = data[index+2:]
@@ -65,4 +73,18 @@ func (h Headers) Parse(data []byte) (int, bool, error) {
 
 func validFieldName(str string) bool {
 	return validPattern.MatchString(str)
+}
+
+func (h Headers) Set(key, value string) Headers {
+	newHeaders := h.Clone()
+	newHeaders[key] = value
+	return newHeaders
+}
+
+func (h Headers) Clone() Headers {
+	newHeaders := make(Headers)
+	for key, value := range h {
+		newHeaders[key] = value
+	}
+	return newHeaders
 }
