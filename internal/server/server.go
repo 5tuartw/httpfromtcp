@@ -77,34 +77,3 @@ func (s *Server) handle(conn net.Conn) {
 
 type Handler func(w *response.Writer, req *request.Request)
 
-/*type HandlerError struct {
-	StatusCode response.StatusCode
-	Message    string
-}
-
-func (s *Server) writeHandlerError(e HandlerError, w io.Writer) error {
-	statusLine := fmt.Sprintf("HTTP/1.1 %d %s\r\n", e.StatusCode, e.StatusCode.String())
-	_, err := w.Write([]byte(statusLine))
-	if err != nil {
-		return err
-	}
-
-	h := response.GetDefaultHeaders(len(e.Message) + 1)
-	err = response.WriteHeaders(w, h)
-	if err != nil {
-		return err
-	}
-
-	_, err = w.Write([]byte("\r\n"))
-	if err != nil {
-		return err
-	}
-
-	_, err = w.Write([]byte(e.Message))
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-*/

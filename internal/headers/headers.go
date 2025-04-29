@@ -3,6 +3,7 @@ package headers
 import (
 	"bytes"
 	"fmt"
+	"net/http"
 	"regexp"
 	"strings"
 )
@@ -87,4 +88,12 @@ func (h Headers) Clone() Headers {
 		newHeaders[key] = value
 	}
 	return newHeaders
+}
+
+func HttpCopy(httpH http.Header) Headers {
+	h := Headers{}
+	for k, v := range httpH {
+		h.Set(k, strings.Join(v, ","))
+	}
+	return h
 }
